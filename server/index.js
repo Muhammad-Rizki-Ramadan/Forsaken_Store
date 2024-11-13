@@ -1,21 +1,38 @@
 import express from "express";
+import "dotenv/config";
+import { db } from "./configs/db.js";
+import userRouter from './routes/user.route.js';
+import { errorHandler } from "./configs/middleware.js";
 
 const app = express();
 
-const PORT = 8000;
+const PORT = process.env.PORT;
 
-app.get("/", (req, res) => {
+app.use(express.json());
+app.use('/api/v1/users',userRouter);
+
+app.use('/', (req, res) => {
+    res.status(200).json({message: "Hello World",});
+});
+
+app.use('*', (req, res) => {
+    res.status(404).json({message: "not found",});
+});
+
+app.use(errorHandler);
+
+app.get("/", (req,res) => {
     res.status(200).json({
-        message: "Hello World!"
+        message: "Hello World",
     });
 });
 
-app.use("*", (req, res) => {
+app.use("*", (req,res) => {
     res.status(404).json({
-        message: "Page not found"
-    });
+        message: "not found",
+    })
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server started, Listening on port ${PORT}`);
 });
